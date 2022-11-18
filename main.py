@@ -1,5 +1,8 @@
 import math
-
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def loss(freq, hr, ht, d):
     freq_log = math.log10(freq)
@@ -13,9 +16,10 @@ def rec_prob(theta, sigma, pr):
 
 
 def simulate(d, sigma):
-    hr = 5  # in meters
-    ht = 100  # in meters
-    freq = 2000  # in MHz
+    hr = 2  # in meters
+    ht = 50  # in meters
+    freq = [*range(1500, 2000, 100)]
+    # in MHz
     theta = -116  # in dBW
     pt = 20  # in W
     pt = 10*math.log10(pt)  # in dB
@@ -31,10 +35,29 @@ if __name__ == '__main__':
     # vars: dist and sigma
     # hr, ht - arbitrary
     # pr ?
-    dist = 2  # in km
+    dist = [*range(100, 2100)]
+    dist = [d/100.0 for d in dist]# in km
     sigma = 3.65  # in dB
+    hr = 2  # in meters
+    ht = 50  # in meters
+    freq = [*range(1500, 2000, 100)]
 
-    simulate(dist, sigma)
+    l_tmp = []
+    for f in freq:
+        for d in dist:
+            l_tmp.append([f, d, loss(f, hr, ht, d)])
+
+    # l = np.array(l_tmp)
+    l_df = pd.DataFrame(l_tmp, columns=["freq", "dist", "loss"])
+
+    print(l_df)
+
+    sns.lineplot(data=l_df, x="dist", y="loss", hue="freq")
+    plt.show()
+
+
+
+    # simulate(dist, sigma)
     # put that in loop, for different dist ig, then plot
 
 
