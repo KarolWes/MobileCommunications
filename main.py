@@ -55,7 +55,30 @@ if __name__ == '__main__':
     sns.lineplot(data=l_df, x="dist", y="loss", hue="freq")
     plt.show()
 
-
+    pt = 61
+    sensitivity = 92.2
+    max_pathloss = (sensitivity + pt) * (-1)
+    f = 1800
+    l_tmp = []
+    for d in dist:
+        l_tmp.append([f, d, loss(f, hr, ht, d)])
+    fdd_df = pd.DataFrame(l_tmp, columns=["freq", "dist", "loss"])
+    fdd_df["EN"] = pt - fdd_df["loss"]
+    fdd_df["gain"] = -max_pathloss - fdd_df["loss"]
+    fdd_df["shadow_fd_p"] = -sensitivity - fdd_df["EN"]
+    print(fdd_df)
+    shadow = [*range(1, 13)]
+    l_tmp = []
+    for s in shadow:
+        for r in fdd_df.iterrows():
+            l_tmp.append([r[1]["dist"], s, 0.5 * math.erfc(r[1]["shadow_fd_p"] / (math.sqrt(2) * s))])
+    shadow_df = pd.DataFrame(l_tmp, columns=["dist", "shadow_param", "shadowing"])
+    print(shadow_df)
+    sns.lineplot(data=shadow_df, x="dist", y="shadowing", hue="shadow_param")
+    plt.yscale("log")
+    ax = plt.gca()
+    ax.set_ylim(1e-2, 1e0)
+    plt.show()
 
     # simulate(dist, sigma)
     # put that in loop, for different dist ig, then plot
