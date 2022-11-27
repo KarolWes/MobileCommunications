@@ -41,12 +41,17 @@ if __name__ == '__main__':
         for d in dist:
             l_tmp.append([f, d, loss(f, hr, ht, d)])
 
-    # l = np.array(l_tmp)
     l_df = pd.DataFrame(l_tmp, columns=["freq", "dist", "loss"])
 
     print(l_df)
 
-    sns.lineplot(data=l_df, x="dist", y="loss", hue="freq")
+    fig = sns.lineplot(data=l_df, x="dist", y="loss", hue="freq")
+    plt.title("Path loss over distance and frequency")
+    plt.xlabel("distance [km]")
+    plt.ylabel("pathloss [dBW]")
+    plt.legend(title="frequency [MHz]")
+    fig = fig.get_figure()
+    fig.savefig("pathloss.png")
     plt.show()
 
     pt = 61
@@ -68,11 +73,14 @@ if __name__ == '__main__':
             l_tmp.append([r[1]["dist"], s, 0.5 * math.erfc(r[1]["shadow_fd_p"] / (math.sqrt(2) * s))])
     shadow_df = pd.DataFrame(l_tmp, columns=["dist", "shadow_param", "shadowing"])
     print(shadow_df)
-    sns.lineplot(data=shadow_df, x="dist", y="shadowing", hue="shadow_param")
+    fig = sns.lineplot(data=shadow_df, x="dist", y="shadowing", hue="shadow_param")
     plt.yscale("log")
+    plt.title("Shadowing over distance and shadowing parameter")
+    plt.xlabel("distance [km]")
+    plt.ylabel("shadowing [dBW]")
+    plt.legend(title="parameter")
     ax = plt.gca()
     ax.set_ylim(1e-2, 1e0)
+    fig = fig.get_figure()
+    fig.savefig("shadowing.png")
     plt.show()
-
-
-
